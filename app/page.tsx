@@ -1,4 +1,6 @@
-// import { useState } from "react";
+"use client";
+
+import { useState } from "react";
 
 const sudokuNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -16,14 +18,12 @@ const sudokuBoard = [
   [2, 1, 8, 3, 9, 6, 5, _, 4],
 ];
 
-const newBoard = sudokuBoard
-
-function possibleNumbers(rowIndex:number, colIndex:number) {
+function possibleNumbers(newBoard:(number | undefined)[][], rowIndex: number, colIndex: number) {
   // const usedNumbers = sudokuBoard.flat().filter((n) => n !== undefined);
 
-  const thisRow = sudokuBoard[rowIndex];
+  const thisRow = newBoard[rowIndex];
 
-  const thisCol = sudokuBoard.map((rowIndex) => rowIndex[colIndex]);
+  const thisCol = newBoard.map((rowIndex) => rowIndex[colIndex]);
 
   const possibleNumbersInRow = sudokuNumberList.filter(
     (n) => !thisRow?.includes(n)
@@ -43,87 +43,84 @@ function possibleNumbers(rowIndex:number, colIndex:number) {
   return combinedArray;
 }
 
-//cell.rowIndex, cell.colIndex
+export default function Home() {
+  const [board, setBoard] = useState(sudokuBoard);
 
-const Square = ({
-  value,
-  rowIndex,
-  colIndex,
-}: {
-  value?: number | undefined;
-  rowIndex: number;
-  colIndex: number;
-}) => {
-  const isEmpty = value === undefined || value === null;
+  const Square = ({
+    value,
+    rowIndex,
+    colIndex,
+  }: {
+    value?: number | undefined;
+    rowIndex: number;
+    colIndex: number;
+  }) => {
+    const isEmpty = value === undefined || value === null;
 
-  console.log("newBoard", newBoard)
+    const finalPossibleNumbers = possibleNumbers(board, rowIndex, colIndex);
 
-  const finalPossibleNumbers = possibleNumbers(rowIndex, colIndex)
+    const updated = board.map((row) => [...row]); 
 
-  console.log(sudokuBoard)
+    if (!isEmpty) {
+      return (
+        <>
+          <div className="border border-black w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl">
+            {value}
+          </div>
+        </>
+      );
+    }
 
-  if (!isEmpty) {
+    if (finalPossibleNumbers.length == 1) {
+      updated[rowIndex][colIndex] = finalPossibleNumbers[0];
+      setBoard(updated);
+      return (
+        <div className="border border-black w-[90px] h-[90px] flex justify-center items-center font-bold text-2xl">
+          {finalPossibleNumbers[0]}
+        </div>
+      );
+    }
+
     return (
       <>
-        <div className="border border-black w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl">
-          {value}
+        <div className="border border-black w-[90px] h-[90px] grid grid-cols-3 text-gray-600">
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(1) && 1}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(2) && 2}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(3) && 3}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(4) && 4}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(5) && 5}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(6) && 6}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(7) && 7}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(8) && 8}
+          </span>
+          <span className="flex items-center justify-center w-[30px] h-[30px]">
+            {finalPossibleNumbers.includes(9) && 9}
+          </span>
         </div>
       </>
     );
-  }
-
-  if (finalPossibleNumbers.length == 1) {
-    // newBoard[rowIndex, colIndex] = finalPossibleNumbers[0]
-    return (
-      <div className="border border-black w-[90px] h-[90px] flex justify-center items-center font-bold text-2xl">
-        {finalPossibleNumbers[0]}
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div className="border border-black w-[90px] h-[90px] grid grid-cols-3 text-gray-600">
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(1) && 1}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(2) && 2}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(3) && 3}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(4) && 4}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(5) && 5}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(6) && 6}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(7) && 7}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(8) && 8}
-        </span>
-        <span className="flex items-center justify-center w-[30px] h-[30px]">
-          {finalPossibleNumbers.includes(9) && 9}
-        </span>
-      </div>
-    </>
-  );
-};
-
-export default function Home() {
-
+  };
 
   return (
     <div className="bg-white h-screen text-black flex justify-center items-center">
       <div>
         <div className="m-auto">
-          {sudokuBoard.map((row, rowIndex) => (
+          {board.map((row, rowIndex) => (
             <div key={rowIndex} className="grid grid-cols-9">
               {row.map((cell, cellIndex) => (
                 <Square
