@@ -8,24 +8,46 @@ const sudokuNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const _ = undefined;
 
 const sudokuBoard = [
-  [_, 6, _, 3, _, _, 8, 7, 1],
-  [_, _, _, _, 3, _, 2, _, _],
-  [_, _, 5, 7, 2, 6, _, 4, _],
-  [_, _, _, _, _, _, 1, 3, 2],
-  [7, 4, 3, _, 6, 2, _, 9, _],
-  [2, _, 1, _, _, 8, _, _, _],
-  [5, 8, _, _, 1, 3, 4, 2, _],
-  [_, _, _, _, _, _, 9, 1, 5],
-  [_, 7, 9, _, 5, 4, _, 8, _],
+  [8, 3, _, _, _, 5, 6, _, 9],
+  [_, 4, _, _, 3, _, _, 2, _],
+  [6, _, 2, 9, 4, 8, _, 3, _],
+  [_, _, _, 3, _, _, 9, _, _],
+  [7, 6, _, _, 9, 2, 1, _, _],
+  [9, 2, _, _, 1, 6, 3, 7, 4],
+  [_, _, _, _, _, 9, 7, 5, _],
+  [_, 9, 6, 7, _, 4, _, _, _],
+  [_, 5, _, _, _, _, _, 9, 6],
 ];
+
+function findLocation(row: number, col: number) {
+  if (row < 3 && col < 3) {
+    return 0
+  } else if (row < 3 && 2 < col && col < 6) {
+    return 1
+  } else if (row < 3 && col > 5) {
+    return 2
+  } else if (row > 2 && row < 6 && col < 3) {
+    return 3
+  } else if (row > 2 && row < 6 && col > 2 && col < 6) {
+    return 4
+  } else if (row > 2 && row < 6 && col > 6) {
+    return 5
+  } else if (row > 5 && col < 3) {
+    return 6
+  } else if (row > 5 && col > 2 && col < 6) {
+    return 7
+  } else {
+    return 8
+  }
+
+}
 
 function possibleNumbers(
   newBoard: (number | undefined)[][],
   rowIndex: number,
-  colIndex: number
+  colIndex: number,
+  box: (number | undefined)[][]
 ) {
-  // const usedNumbers = sudokuBoard.flat().filter((n) => n !== undefined);
-
   const thisRow = newBoard[rowIndex];
 
   const thisCol = newBoard.map((rowIndex) => rowIndex[colIndex]);
@@ -34,22 +56,25 @@ function possibleNumbers(
     (n) => !thisRow?.includes(n)
   );
 
-  console.log("check ngang", possibleNumbersInRow)
-
   const possibleNumbersInCol = sudokuNumberList.filter(
     (n) => !thisCol?.includes(n)
   );
 
-  console.log("check doc", possibleNumbersInCol)
+  const combinedArray = possibleNumbersInRow.filter(element => possibleNumbersInCol.includes(element));
 
-  const combinedArray = possibleNumbersInRow.filter(element => possibleNumbersInCol.includes(element));;
+  const location = findLocation(rowIndex, colIndex)
+
+  console.log(box[location])
+
+  const resultList = combinedArray.filter(item => !box[location].includes(item));
+
+  console.log("check trong box", resultList)
 
   if (possibleNumbersInRow.length == 1) return possibleNumbersInRow;
 
   if (possibleNumbersInCol.length == 1) return possibleNumbersInCol;
 
-  // return sudokuNumberList.filter((n) => !usedNumbers.includes(n));
-  return combinedArray;
+  return resultList;
 }
 
 export default function Home() {
@@ -59,14 +84,16 @@ export default function Home() {
     value,
     rowIndex,
     colIndex,
+    box,
   }: {
     value?: number | undefined;
     rowIndex: number;
     colIndex: number;
+    box: (number | undefined)[][]
   }) => {
     const isEmpty = value === undefined || value === null;
 
-    const finalPossibleNumbers = possibleNumbers(board, rowIndex, colIndex);
+    const finalPossibleNumbers = possibleNumbers(board, rowIndex, colIndex, box);
 
     const updated = board.map((row) => [...row]);
 
@@ -149,108 +176,107 @@ export default function Home() {
     );
   };
 
-
-  const box1 = [
-    board[0][0],
-    board[0][1],
-    board[0][2],
-    board[1][0],
-    board[1][1],
-    board[1][2],
-    board[2][0],
-    board[2][1],
-    board[2][2],
-  ];
-  const box2 = [
-    board[0][3],
-    board[0][4],
-    board[0][5],
-    board[1][3],
-    board[1][4],
-    board[1][5],
-    board[2][3],
-    board[2][4],
-    board[2][5],
-  ];
-  const box3 = [
-    board[0][6],
-    board[0][7],
-    board[0][8],
-    board[1][6],
-    board[1][7],
-    board[1][8],
-    board[2][6],
-    board[2][7],
-    board[2][8],
-  ];
-  const box4 = [
-    board[3][0],
-    board[3][1],
-    board[3][2],
-    board[4][0],
-    board[4][1],
-    board[4][2],
-    board[5][0],
-    board[5][1],
-    board[5][2],
-  ];
-  const box5 = [
-    board[3][3],
-    board[3][4],
-    board[3][5],
-    board[4][3],
-    board[4][4],
-    board[4][5],
-    board[5][3],
-    board[5][4],
-    board[5][5],
-  ];
-  const box6 = [
-    board[3][6],
-    board[3][7],
-    board[3][8],
-    board[4][6],
-    board[4][7],
-    board[4][8],
-    board[5][6],
-    board[5][7],
-    board[5][8],
-  ];
-  const box7 = [
-    board[6][0],
-    board[6][1],
-    board[6][2],
-    board[7][0],
-    board[7][1],
-    board[7][2],
-    board[8][0],
-    board[8][1],
-    board[8][2],
-  ];
-  const box8 = [
-    board[6][3],
-    board[6][4],
-    board[6][5],
-    board[7][3],
-    board[7][4],
-    board[7][5],
-    board[8][3],
-    board[8][4],
-    board[8][5],
-  ];
-  const box9 = [
-    board[6][6],
-    board[6][7],
-    board[6][8],
-    board[7][6],
-    board[7][7],
-    board[7][8],
-    board[8][6],
-    board[8][7],
-    board[8][8],
-  ];
-
-  console.log(box1)
+  const Box = [
+    [
+      board[0][0],
+      board[0][1],
+      board[0][2],
+      board[1][0],
+      board[1][1],
+      board[1][2],
+      board[2][0],
+      board[2][1],
+      board[2][2],
+    ],
+    [
+      board[0][3],
+      board[0][4],
+      board[0][5],
+      board[1][3],
+      board[1][4],
+      board[1][5],
+      board[2][3],
+      board[2][4],
+      board[2][5],
+    ],
+    [
+      board[0][6],
+      board[0][7],
+      board[0][8],
+      board[1][6],
+      board[1][7],
+      board[1][8],
+      board[2][6],
+      board[2][7],
+      board[2][8],
+    ],
+    [
+      board[3][0],
+      board[3][1],
+      board[3][2],
+      board[4][0],
+      board[4][1],
+      board[4][2],
+      board[5][0],
+      board[5][1],
+      board[5][2],
+    ],
+    [
+      board[3][3],
+      board[3][4],
+      board[3][5],
+      board[4][3],
+      board[4][4],
+      board[4][5],
+      board[5][3],
+      board[5][4],
+      board[5][5],
+    ],
+    [
+      board[3][6],
+      board[3][7],
+      board[3][8],
+      board[4][6],
+      board[4][7],
+      board[4][8],
+      board[5][6],
+      board[5][7],
+      board[5][8],
+    ],
+    [
+      board[6][0],
+      board[6][1],
+      board[6][2],
+      board[7][0],
+      board[7][1],
+      board[7][2],
+      board[8][0],
+      board[8][1],
+      board[8][2],
+    ],
+    [
+      board[6][3],
+      board[6][4],
+      board[6][5],
+      board[7][3],
+      board[7][4],
+      board[7][5],
+      board[8][3],
+      board[8][4],
+      board[8][5],
+    ],
+    [
+      board[6][6],
+      board[6][7],
+      board[6][8],
+      board[7][6],
+      board[7][7],
+      board[7][8],
+      board[8][6],
+      board[8][7],
+      board[8][8],
+    ]
+  ]
 
   return (
     <div className="bg-white h-screen text-black flex justify-center items-center">
@@ -264,6 +290,7 @@ export default function Home() {
                   value={cell}
                   colIndex={cellIndex}
                   rowIndex={rowIndex}
+                  box={Box}
                 />
               ))}
             </div>
