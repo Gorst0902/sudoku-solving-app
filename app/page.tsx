@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { clsx } from "clsx";
 
 const sudokuNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -18,7 +19,11 @@ const sudokuBoard = [
   [2, 1, 8, 3, 9, 6, 5, _, 4],
 ];
 
-function possibleNumbers(newBoard:(number | undefined)[][], rowIndex: number, colIndex: number) {
+function possibleNumbers(
+  newBoard: (number | undefined)[][],
+  rowIndex: number,
+  colIndex: number
+) {
   // const usedNumbers = sudokuBoard.flat().filter((n) => n !== undefined);
 
   const thisRow = newBoard[rowIndex];
@@ -59,12 +64,20 @@ export default function Home() {
 
     const finalPossibleNumbers = possibleNumbers(board, rowIndex, colIndex);
 
-    const updated = board.map((row) => [...row]); 
+    const updated = board.map((row) => [...row]);
 
     if (!isEmpty) {
       return (
         <>
-          <div className="border border-black w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl">
+          <div
+            className={clsx(
+              "border border-gray-400 w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl",
+              colIndex == 3 && "border-l-4",
+              colIndex == 5 && "border-r-4",
+              rowIndex == 3 && "border-t-4",
+              rowIndex == 5 && "border-b-4"
+            )}
+          >
             {value}
           </div>
         </>
