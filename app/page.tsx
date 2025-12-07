@@ -19,6 +19,18 @@ const sudokuBoard = [
   [_, _, 8, 3, _, 4, _, 6, _],
 ];
 
+const newMap = [
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+]
+
 const Box = [
   [
     sudokuBoard[0][0],
@@ -198,10 +210,9 @@ export default function Home() {
 
     if (!isEmpty) {
       return (
-        <>
           <div
             className={clsx(
-              "border border-gray-400 w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl",
+              "border border-gray-400 w-[60px] h-[60px] flex flex-col justify-center items-center font-bold text-2xl",
               colIndex == 3 && "border-l-4",
               colIndex == 5 && "border-r-4",
               rowIndex == 3 && "border-t-4",
@@ -210,7 +221,6 @@ export default function Home() {
           >
             {value}
           </div>
-        </>
       );
     }
 
@@ -220,7 +230,7 @@ export default function Home() {
       return (
         <div
           className={clsx(
-            "border border-gray-400 w-[90px] h-[90px] flex justify-center items-center font-bold text-2xl",
+            "border border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-xl",
             colIndex == 3 && "border-l-4",
             colIndex == 5 && "border-r-4",
             rowIndex == 3 && "border-t-4",
@@ -236,38 +246,38 @@ export default function Home() {
       <>
         <div
           className={clsx(
-            "border border-gray-400 w-[90px] h-[90px] grid grid-cols-3 text-gray-600",
+            "border border-gray-400 w-[60px] h-[60px] grid grid-cols-3 text-gray-600",
             colIndex == 3 && "border-l-4",
             colIndex == 5 && "border-r-4",
             rowIndex == 3 && "border-t-4",
             rowIndex == 5 && "border-b-4"
           )}
         >
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(1) && 1}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(2) && 2}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(3) && 3}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(4) && 4}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(5) && 5}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(6) && 6}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(7) && 7}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(8) && 8}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(9) && 9}
           </span>
         </div>
@@ -275,16 +285,53 @@ export default function Home() {
     );
   };
 
+  const SquareCanType = ({
+    rowIndex,
+    colIndex,
+    activeCell,
+    setActiveCell,
+  }: {
+    rowIndex: number;
+    colIndex: number;
+    activeCell: { row: number; col: number } | null;
+    setActiveCell: (pos: { row: number; col: number }) => void;
+  }) => {
+    const [value, setValue] = useState<number | null>(null);
+  
+    const isActive =
+      activeCell?.row === rowIndex && activeCell?.col === colIndex;
+  
+    function handleClick() {
+      setActiveCell({ row: rowIndex, col: colIndex });
+    }
+  
+    return (
+      <div
+        className={clsx(
+          "border cursor-pointer border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
+          colIndex === 2 && "border-r-4",
+          colIndex === 5 && "border-r-4",
+          rowIndex === 2 && "border-b-4",
+          rowIndex === 5 && "border-b-4",
+          isActive && "bg-blue-300"
+        )}
+        onClick={handleClick}
+      >
+        {value}
+      </div>
+    );
+  };
+  
+
   return (
     <div className="bg-white h-screen text-black flex justify-center items-center">
       <div>
         <div className="m-auto">
-          {board.map((row, rowIndex) => (
+          {newMap.map((row, rowIndex) => (
             <div key={rowIndex} className="grid grid-cols-9">
               {row.map((cell, cellIndex) => (
-                <Square
+                <SquareCanType
                   key={cellIndex}
-                  value={cell}
                   colIndex={cellIndex}
                   rowIndex={rowIndex}
                 />
