@@ -201,7 +201,7 @@ export default function Home() {
         <>
           <div
             className={clsx(
-              "border border-gray-400 w-[90px] h-[90px] flex flex-col justify-center items-center font-bold text-2xl",
+              "border border-gray-400 w-[60px] h-[60px] flex flex-col justify-center items-center font-bold text-2xl",
               colIndex == 3 && "border-l-4",
               colIndex == 5 && "border-r-4",
               rowIndex == 3 && "border-t-4",
@@ -220,7 +220,7 @@ export default function Home() {
       return (
         <div
           className={clsx(
-            "border border-gray-400 w-[90px] h-[90px] flex justify-center items-center font-bold text-2xl",
+            "border border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
             colIndex == 3 && "border-l-4",
             colIndex == 5 && "border-r-4",
             rowIndex == 3 && "border-t-4",
@@ -236,38 +236,38 @@ export default function Home() {
       <>
         <div
           className={clsx(
-            "border border-gray-400 w-[90px] h-[90px] grid grid-cols-3 text-gray-600",
+            "border border-gray-400 w-[60px] h-[60px] grid grid-cols-3 text-gray-600",
             colIndex == 3 && "border-l-4",
             colIndex == 5 && "border-r-4",
             rowIndex == 3 && "border-t-4",
             rowIndex == 5 && "border-b-4"
           )}
         >
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(1) && 1}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(2) && 2}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(3) && 3}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(4) && 4}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(5) && 5}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(6) && 6}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(7) && 7}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(8) && 8}
           </span>
-          <span className="flex items-center justify-center w-[30px] h-[30px]">
+          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
             {finalPossibleNumbers.includes(9) && 9}
           </span>
         </div>
