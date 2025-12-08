@@ -1,45 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { clsx } from "clsx";
 
 const sudokuNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const _ = undefined;
 
-const sudokuBoard = [
-  [_, 9, 1, _, _, _, _, 7, 4],
-  [3, _, _, _, _, 9, _, _, _],
-  [_, _, _, _, _, _, _, 8, 9],
-  [_, _, _, _, 2, _, 9, _, _],
-  [_, 7, 8, _, _, _, _, _, _],
-  [_, 5, _, _, _, 6, _, _, _],
-  [6, _, _, _, 9, _, 2, _, _],
-  [_, _, _, 8, 7, _, _, _, _],
-  [_, _, _, 1, 6, _, _, _, _],
+const newMap = [
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, _, _],
 ];
 
 function findLocation(row: number, col: number) {
   if (row < 3 && col < 3) {
-    return 0
-  } else if (row < 3 && col > 2 && col < 6) {
-    return 1
+    return 0;
+  } else if (row < 3 && 2 < col && col < 6) {
+    return 1;
   } else if (row < 3 && col > 5) {
-    return 2
+    return 2;
   } else if (row > 2 && row < 6 && col < 3) {
-    return 3
+    return 3;
   } else if (row > 2 && row < 6 && col > 2 && col < 6) {
-    return 4
+    return 4;
   } else if (row > 2 && row < 6 && col > 6) {
-    return 5
+    return 5;
   } else if (row > 5 && col < 3) {
-    return 6
+    return 6;
   } else if (row > 5 && col > 2 && col < 6) {
-    return 7
+    return 7;
   } else {
-    return 8
+    return 8;
   }
-
 }
 
 function possibleNumbers(
@@ -49,82 +48,76 @@ function possibleNumbers(
   box: (number | undefined)[][]
 ) {
   const thisRow = newBoard[rowIndex];
-
   const thisCol = newBoard.map((rowIndex) => rowIndex[colIndex]);
-
   const possibleNumbersInRow = sudokuNumberList.filter(
     (n) => !thisRow?.includes(n)
   );
-
   const possibleNumbersInCol = sudokuNumberList.filter(
     (n) => !thisCol?.includes(n)
   );
-
-  const combinedArray = possibleNumbersInRow.filter(element => possibleNumbersInCol.includes(element));
-
-  const location = findLocation(rowIndex, colIndex)
-
-  const resultList = combinedArray.filter(item => !box[location].includes(item));
+  const combinedArray = possibleNumbersInRow.filter((element) =>
+    possibleNumbersInCol.includes(element)
+  );
+  const location = findLocation(rowIndex, colIndex);
+  console.log(box[location]);
+  const resultList = combinedArray.filter(
+    (item) => !box[location].includes(item)
+  );
+  console.log("check trong box", resultList);
 
   if (possibleNumbersInRow.length == 1) return possibleNumbersInRow;
-
   if (possibleNumbersInCol.length == 1) return possibleNumbersInCol;
-
   return resultList;
 }
 
 export default function Home() {
-  const [board, setBoard] = useState(sudokuBoard);
+  const [board, setBoard] = useState(newMap);
+  const [doneMap, setDoneMap] = useState(false);
 
+  const [activeCell, setActiveCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const Square = ({
     value,
     rowIndex,
     colIndex,
-    box
+    box,
   }: {
     value?: number | undefined;
     rowIndex: number;
     colIndex: number;
-    box: (number | undefined)[][]
+    box: (number | undefined)[][];
   }) => {
     const isEmpty = value === undefined || value === null;
-
-    const finalPossibleNumbers = possibleNumbers(board, rowIndex, colIndex, box);
-
+    const finalPossibleNumbers = possibleNumbers(
+      board,
+      rowIndex,
+      colIndex,
+      box
+    );
     const updated = board.map((row) => [...row]);
+
+    useEffect(() => {
+      if (isEmpty && finalPossibleNumbers.length === 1) {
+        const updated = board.map((row) => [...row]);
+        updated[rowIndex][colIndex] = finalPossibleNumbers[0];
+        setBoard(updated);
+      }
+    }, [finalPossibleNumbers.length]);
 
     if (!isEmpty) {
       return (
-        <>
-          <div
-            className={clsx(
-              "border border-gray-400 w-[60px] h-[60px] flex flex-col justify-center items-center font-bold text-2xl",
-              colIndex == 3 && "border-l-4",
-              colIndex == 5 && "border-r-4",
-              rowIndex == 3 && "border-t-4",
-              rowIndex == 5 && "border-b-4"
-            )}
-          >
-            {value}
-          </div>
-        </>
-      );
-    }
-
-    if (finalPossibleNumbers.length == 1) {
-      updated[rowIndex][colIndex] = finalPossibleNumbers[0];
-      setBoard(updated);
-      return (
         <div
           className={clsx(
-            "border border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
+            "border border-gray-400 w-[60px] h-[60px] flex flex-col justify-center items-center font-bold text-2xl",
             colIndex == 3 && "border-l-4",
             colIndex == 5 && "border-r-4",
             rowIndex == 3 && "border-t-4",
             rowIndex == 5 && "border-b-4"
           )}
         >
-          {finalPossibleNumbers[0]}
+          {value}
         </div>
       );
     }
@@ -140,31 +133,31 @@ export default function Home() {
             rowIndex == 5 && "border-b-4"
           )}
         >
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(1) && 1}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(2) && 2}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(3) && 3}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(4) && 4}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(5) && 5}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(6) && 6}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(7) && 7}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(8) && 8}
           </span>
-          <span className="flex items-center justify-center  w-[20px] text-sm h-[20px]">
+          <span className="flex items-center justify-center w-[20px] h-[20px] text-sm">
             {finalPossibleNumbers.includes(9) && 9}
           </span>
         </div>
@@ -271,26 +264,132 @@ export default function Home() {
       board[8][6],
       board[8][7],
       board[8][8],
-    ]
-  ]
+    ],
+  ];
+
+  const SquareCanType = ({
+    rowIndex,
+    colIndex,
+    activeCell,
+    setActiveCell,
+    value,
+  }: {
+    rowIndex: number;
+    colIndex: number;
+    activeCell: { row: number; col: number } | null;
+    setActiveCell: (pos: { row: number; col: number }) => void;
+    value: number;
+  }) => {
+    const isActive =
+      activeCell?.row === rowIndex && activeCell?.col === colIndex;
+    function handleClick() {
+      setActiveCell({ row: rowIndex, col: colIndex });
+    }
+    return (
+      <div
+        className={clsx(
+          "border cursor-pointer border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
+          colIndex === 2 && "border-r-4",
+          colIndex === 5 && "border-r-4",
+          rowIndex === 2 && "border-b-4",
+          rowIndex === 5 && "border-b-4",
+          isActive && "bg-blue-300"
+        )}
+        onClick={handleClick}
+      >
+        {value}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!activeCell) return; // no square selected
+
+      const num = Number(e.key);
+      if (num >= 1 && num <= 9) {
+        setBoard((prev) => {
+          const newBoard = prev.map((row) => [...row]);
+          newBoard[activeCell.row][activeCell.col] = num;
+          return newBoard;
+        });
+      }
+
+      if (e.key === "Backspace" || e.key === "Delete") {
+        setBoard((prev) => {
+          const newBoard = prev.map((row) => [...row]);
+          newBoard[activeCell.row][activeCell.col] = undefined;
+          return newBoard;
+        });
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeCell]);
+
+  if (doneMap) {
+    return (
+      <div className="bg-white h-screen text-black flex justify-center items-center">
+        <div className="m-auto">
+          <div>
+            {board.map((row, rowIndex) => (
+              <div key={rowIndex} className="grid grid-cols-9">
+                {row.map((cell, cellIndex) => (
+                  <Square
+                    key={cellIndex}
+                    colIndex={cellIndex}
+                    rowIndex={rowIndex}
+                    value={board[rowIndex][cellIndex]} // <-- required
+                    box={Box}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center mt-4">
+            <button
+              className="bg-blue-500 py-2 px-6 rounded-3xl cursor-pointer"
+              onClick={() => {
+                setDoneMap(false);
+              }}
+            >
+              Try new board
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white h-screen text-black flex justify-center items-center">
-      <div>
-        <div className="m-auto">
-          {board.map((row, rowIndex) => (
+      <div className="m-auto">
+        <div>
+          {newMap.map((row, rowIndex) => (
             <div key={rowIndex} className="grid grid-cols-9">
               {row.map((cell, cellIndex) => (
-                <Square
+                <SquareCanType
                   key={cellIndex}
-                  value={cell}
                   colIndex={cellIndex}
                   rowIndex={rowIndex}
-                  box={Box}
+                  activeCell={activeCell}
+                  setActiveCell={setActiveCell}
+                  value={board[rowIndex][cellIndex]}
                 />
               ))}
             </div>
           ))}
+        </div>
+        <div className="flex justify-center mt-4">
+          <button
+            className="bg-green-400 py-2 px-6 rounded-3xl cursor-pointer"
+            onClick={() => {
+              setDoneMap(true);
+            }}
+          >
+            Solve
+          </button>
         </div>
       </div>
     </div>
