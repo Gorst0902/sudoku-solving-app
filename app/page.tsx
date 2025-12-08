@@ -63,7 +63,6 @@ function possibleNumbers(
   const resultList = combinedArray.filter(
     (item) => !box[location].includes(item)
   );
-  console.log("check trong box", resultList);
 
   if (possibleNumbersInRow.length == 1) return possibleNumbersInRow;
   if (possibleNumbersInCol.length == 1) return possibleNumbersInCol;
@@ -71,7 +70,7 @@ function possibleNumbers(
 }
 
 export default function Home() {
-  const [board, setBoard] = useState(newMap);
+  const [board, setBoard] = useState<(number | undefined)[][]>(newMap);
   const [doneMap, setDoneMap] = useState(false);
 
   const [activeCell, setActiveCell] = useState<{
@@ -96,12 +95,11 @@ export default function Home() {
       colIndex,
       box
     );
-    const updated = board.map((row) => [...row]);
 
     useEffect(() => {
       if (isEmpty && finalPossibleNumbers.length === 1) {
         const updated = board.map((row) => [...row]);
-        updated[rowIndex][colIndex] = finalPossibleNumbers[0];
+        updated[rowIndex][colIndex] = finalPossibleNumbers[0]!;
         setBoard(updated);
       }
     }, [finalPossibleNumbers.length]);
@@ -278,7 +276,7 @@ export default function Home() {
     colIndex: number;
     activeCell: { row: number; col: number } | null;
     setActiveCell: (pos: { row: number; col: number }) => void;
-    value: number;
+    value: number | undefined;
   }) => {
     const isActive =
       activeCell?.row === rowIndex && activeCell?.col === colIndex;
