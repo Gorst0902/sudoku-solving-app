@@ -19,6 +19,24 @@ const newMap = [
   [_, _, _, _, _, _, _, _, _],
 ];
 
+function findUniqueAcrossArrays(arrays: number[][]) {
+  const flat = arrays.flat();
+
+  const counts = flat.reduce((acc, n) => {
+    acc[n] = (acc[n] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  const unique = Object.keys(counts)
+    .filter((x) => counts[Number(x)] === 1)
+    .map(Number);
+
+  return unique.map((value) => {
+    const arrayIndex = arrays.findIndex((arr) => arr.includes(value));
+    return { value, arrayIndex };
+  });
+}
+
 function findLocation(row: number, col: number) {
   if (row < 3 && col < 3) {
     return 0;
@@ -47,27 +65,69 @@ function possibleNumbers(
   colIndex: number,
   box: (number | undefined)[][]
 ) {
+  if (newBoard[rowIndex][colIndex] !== undefined) return [];
+
   const thisRow = newBoard[rowIndex];
   const thisCol = newBoard.map((rowIndex) => rowIndex[colIndex]);
+
   const possibleNumbersInRow = sudokuNumberList.filter(
     (n) => !thisRow?.includes(n)
   );
+
+  if (possibleNumbersInRow.length == 1) return possibleNumbersInRow;
+
   const possibleNumbersInCol = sudokuNumberList.filter(
     (n) => !thisCol?.includes(n)
   );
+
+  if (possibleNumbersInCol.length == 1) return possibleNumbersInCol;
+
   const combinedArray = possibleNumbersInRow.filter((element) =>
     possibleNumbersInCol.includes(element)
   );
+
   const location = findLocation(rowIndex, colIndex);
-  console.log(box[location]);
+
   const resultList = combinedArray.filter(
     (item) => !box[location].includes(item)
   );
 
-  if (possibleNumbersInRow.length == 1) return possibleNumbersInRow;
-  if (possibleNumbersInCol.length == 1) return possibleNumbersInCol;
   return resultList;
 }
+
+const SquareCanType = ({
+  rowIndex,
+  colIndex,
+  activeCell,
+  setActiveCell,
+  value,
+}: {
+  rowIndex: number;
+  colIndex: number;
+  activeCell: { row: number; col: number } | null;
+  setActiveCell: (pos: { row: number; col: number }) => void;
+  value: number | undefined;
+}) => {
+  const isActive = activeCell?.row === rowIndex && activeCell?.col === colIndex;
+  function handleClick() {
+    setActiveCell({ row: rowIndex, col: colIndex });
+  }
+  return (
+    <div
+      className={clsx(
+        "border cursor-pointer border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
+        colIndex == 3 && "border-l-4",
+        colIndex == 5 && "border-r-4",
+        rowIndex == 3 && "border-t-4",
+        rowIndex == 5 && "border-b-4",
+        isActive && "bg-blue-300"
+      )}
+      onClick={handleClick}
+    >
+      {value}
+    </div>
+  );
+};
 
 export default function Home() {
   const [board, setBoard] = useState<(number | undefined)[][]>(newMap);
@@ -77,6 +137,7 @@ export default function Home() {
     row: number;
     col: number;
   } | null>(null);
+
   const Square = ({
     value,
     rowIndex,
@@ -102,7 +163,7 @@ export default function Home() {
         updated[rowIndex][colIndex] = finalPossibleNumbers[0]!;
         setBoard(updated);
       }
-    }, [finalPossibleNumbers.length]);
+    }, [finalPossibleNumbers, isEmpty]);
 
     if (!isEmpty) {
       return (
@@ -265,40 +326,72 @@ export default function Home() {
     ],
   ];
 
-  const SquareCanType = ({
-    rowIndex,
-    colIndex,
-    activeCell,
-    setActiveCell,
-    value,
-  }: {
-    rowIndex: number;
-    colIndex: number;
-    activeCell: { row: number; col: number } | null;
-    setActiveCell: (pos: { row: number; col: number }) => void;
-    value: number | undefined;
-  }) => {
-    const isActive =
-      activeCell?.row === rowIndex && activeCell?.col === colIndex;
-    function handleClick() {
-      setActiveCell({ row: rowIndex, col: colIndex });
+  const getRow = (rowIndex: number) => board[rowIndex];
+
+  const getCol = (colIndex: number) => board.map((row) => row[colIndex]);
+
+  function missingInRow(row: number) {
+    const thisRow = getRow(row)
+    const allSquareNotCompleted = []
+
+    for (let i = 0; i < 9; i++) {
+      if (thisRow[i] == undefined) {
+        allSquareNotCompleted.push(possibleNumbers(board, row, i, Box));
+      }
     }
-    return (
-      <div
-        className={clsx(
-          "border cursor-pointer border-gray-400 w-[60px] h-[60px] flex justify-center items-center font-bold text-2xl",
-          colIndex == 3 && "border-l-4",
-          colIndex == 5 && "border-r-4",
-          rowIndex == 3 && "border-t-4",
-          rowIndex == 5 && "border-b-4",
-          isActive && "bg-blue-300"
-        )}
-        onClick={handleClick}
-      >
-        {value}
-      </div>
-    );
-  };
+
+    const missingNumber = findUniqueAcrossArrays(allSquareNotCompleted)
+
+    let count = -1
+    let actutalIndex = 0
+
+    for (let i = 0; i < 9; i++) {
+      if (thisRow[i] == undefined) {
+        count++
+        actutalIndex = i
+        if (count == missingNumber[0]?.arrayIndex) break
+      }
+    }
+    const updated = board.map((row) => [...row]);
+    updated[row][actutalIndex] = missingNumber[0]?.value
+    setBoard(updated)
+  }
+
+  function missingInCol(col: number) {
+    const thisRow = getCol(col)
+    const allSquareNotCompleted = []
+
+    for (let i = 0; i < 9; i++) {
+      if (thisRow[i] == undefined) {
+        allSquareNotCompleted.push(possibleNumbers(board, i, col, Box));
+      }
+    }
+
+    const missingNumber = findUniqueAcrossArrays(allSquareNotCompleted)
+
+    let count = -1
+    let actutalIndex = 0
+
+    for (let i = 0; i < 9; i++) {
+      if (thisRow[i] == undefined) {
+        count++
+        actutalIndex = i
+        if (count == missingNumber[0]?.arrayIndex) break
+      }
+    }
+    const updated = board.map((row) => [...row]);
+    updated[actutalIndex][col] = missingNumber[0]?.value
+    setBoard(updated)
+  }
+
+  useEffect(() => {
+    if (!doneMap) return;
+  
+    for (let i = 0; i < 9; i++) {
+      missingInRow(i);
+      missingInCol(i)
+    }
+  }, [doneMap]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
